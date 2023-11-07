@@ -45,14 +45,14 @@ class LoginRegisterController extends Controller
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo')->getClientOriginalExtension();
             $filenameSimpan = $filename . '_' . time() . '.' . $extension;
-            $path = $request->file('photo')->storeAs('photos', $filenameSimpan);
+            $path = $request->file('photo')->storeAs('photos/original', $filenameSimpan);
         }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'photo' => $path
+            'photo' =>$filenameSimpan
         ]);
 
         $credentials = $request->only('email', 'password');

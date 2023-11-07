@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
@@ -65,29 +67,27 @@ class UserController extends Controller
         ]);
 
         $user->name = $request->input('name');
+        
         if ($request->hasFile('photo')) {
+            $photoPath = public_path('photos/original'. $user->photo);
+            if (File::exists($photoPath)) 
+            {
+                File::delete($photoPath);
+            }
             $filenameWithExt = $request->file('photo')->getClientOriginalName();
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo')->getClientOriginalExtension();
             $filenameSimpan = $filename . '_' . time() . '.' . $extension;
-            $path = $request->file('photo')->storeAs($filenameSimpan);
+            $path = $request->file('photo')->storeAs('photo/original',$filenameSimpan);
 
-        if ($user->photo) {
-            $photoPath = public_path('photos/original/' . $user->photo);
-            if (File::exists($photoPath)) {
-                File::delete($photoPath); 
-        
-            }
+            $user->photo = $filenameSimpan;
+            $user->save();
+        } else {
         }
 
-        $user->photo = $path;
-        $user->save();
-    } else{
-    }
-
-    return redirect()->route('users')
+        return redirect()->route('users')
             ->with('success', 'User photo is updated successfully.');
-}
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -105,4 +105,36 @@ class UserController extends Controller
 
         return redirect()->route('users')->with('success', 'Yeay. User photo is deleted successfully.');
     }
+
+    public function resizeForm(User $user)
+    {
+    return view('users.resize', compact('user'));
+}
+
+
+    public function resizeImage(Request $request, User $user)
+    {
+        $this->validate($request, [
+            'size' => 'required|in:thumbnail,square',
+            'photo' => 'required|string',
+        ]);
+        // dd($request);
+        $sizePhoto = $request->input('size');
+        // dd(Storage::exists('photos/original/' . $user->photo));
+        if (Storage::exists('photos/original/' . $user->photo)) {
+            $originalImagePath = public_path('storage/photos/original/' . $user->photo);
+            if ($sizePhoto === 'thumbnail') {
+                $resizedImage = Image::make($originalImagePath);
+                $resizedImage->fit(160, 90);
+                $resizedImage->save(public_path('storage/photos/thumbnail/' . $user->photo));
+            } elseif ($sizePhoto === 'square') {
+                $resizedImage = Image::make($originalImagePath);
+                $resizedImage->fit(100, 100);
+                $resizedImage->save(public_path('storage/photos/square/' . $user->photo));
+            }
+        }
+        $data_user = User::all();
+        return view('users.users', compact('data_user'))->with('success', 'User photo is resized successfully.');
+    }
+
 }

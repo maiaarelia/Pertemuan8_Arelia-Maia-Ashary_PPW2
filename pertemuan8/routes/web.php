@@ -37,6 +37,8 @@ Route::get('/users', [UserController::class, 'index'])->name('users');
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
 Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
+Route::get('/users/{user}/resize', [UserController::class, 'resizeForm'])->name('resizeForm');
+Route::post('/users/{user}/resize', [UserController::class, 'resizeImage'])->name('resizeImage');
 
 
 Route::post('/post-email', [SendEmailController::class, 'store'])->name('post-email');

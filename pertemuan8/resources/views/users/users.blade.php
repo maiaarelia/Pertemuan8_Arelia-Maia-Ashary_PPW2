@@ -20,30 +20,32 @@
                 <td class="text-center">{{ $user->email }}</td>
                 <td>
                     <div class="d-flex justify-content-center">
-                        <img src="{{ asset('storage/' . $user->photo) }}" width="150px" alt="User Photo">
+                        <img src="{{ asset('storage/photos/original/' . $user->photo) }}" width="150px"
+                            alt="User Photo">
                     </div>
                 </td>
                 <td class="text-center">
                     <div class="btn-group" role="group">
-                        <form action="{{ route('users.destroy', $user) }}" method="post" class="me-2">
+
+                        <form action="{{ route('resizeForm', $user) }}">
                             @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger cute-button hapus-button"
-                                onclick="return confirm('Yakin mau dihapus')">Hapus</button>
+                            <button class="btn btn-warning cute-button resize-button"
+                                style="margin: 10px; color: #ffd6eb;">Resize
+                                Photo</button>
                         </form>
 
                         <form action="{{ route('users.edit', $user) }}">
                             @csrf
-                            <button class="btn btn-primary cute-button edit-button"
+                            <button class="btn btn-primary cute-button edit-button" style="margin: 10px;"
                                 onclick="return confirm('Yakin mau melakukan edit')">Edit</button>
                         </form>
 
-                        <form action="{{ route('users.resizeImage', $user) }}">
+                        <form action="{{ route('users.destroy', $user) }}" method="post" class="me-2">
                             @csrf
-                            <button class="btn btn-secondary cute-button resize-button"
-                                onclick="return confirm('Yakin mau melakukan resize foto')">Resize Photo</button>
+                            @method('DELETE')
+                            <button class="btn btn-danger cute-button hapus-button" style="margin: 10px;"
+                                onclick="return confirm('Yakin mau dihapus')">Hapus</button>
                         </form>
-
                     </div>
                 </td>
             </tr>
