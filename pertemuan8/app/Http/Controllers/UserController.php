@@ -78,7 +78,7 @@ class UserController extends Controller
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
             $extension = $request->file('photo')->getClientOriginalExtension();
             $filenameSimpan = $filename . '_' . time() . '.' . $extension;
-            $path = $request->file('photo')->storeAs('photo/original',$filenameSimpan);
+            $path = $request->file('photo')->storeAs('photos/original',$filenameSimpan);
 
             $user->photo = $filenameSimpan;
             $user->save();
